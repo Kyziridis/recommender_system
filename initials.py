@@ -2,9 +2,18 @@ import numpy as np
 import pandas as pd
 
 #==============================================================================
+# This is not something so interesting but i have made some dataframes in order 
+# to do the matrix facrtorization and the collaborating filtering as the slides
+# sows... So after the end of his script I just made some matrixes like the slides
+#==============================================================================
+
+###############################################################################
+
+#==============================================================================
 # User data: <UserID::Gender::Age::Occupation::Zip-code>
 # Movie data: <MovieID::Title (Year)::Genres>
 #==============================================================================
+
 print("\n")
 
 ratings = np.genfromtxt("/home/dead/Documents/Advances in Data Mining/1st project/ml-1m/ratings.dat", 
@@ -125,5 +134,9 @@ print 'The mean of all of ratings is:' , MeanAll
 
 #Use the second naiv : all ratings for movie
 
+#################################################################
+# I can't proceed the algorythms without some help from the proffesor...
+# I think that we are going to discuss it in the tuesday 6hour course :P:P
+##################################################################
 
 
