@@ -49,7 +49,8 @@ for fold in range(nfolds):
 ###############################################    
 #So we have already the train and the test set !!!    
 ###############################################
-    
+
+#First naiv approach... global    
 #calculate model parameters: mean rating over the training set:
     gmr=np.mean(train[:,2])
 
@@ -71,8 +72,6 @@ print("\n")
 ######################################################################
 
 #That was the first naiv approach
-
-
 
 #=============================================================
 #____Make dataframes in order to proceed___
@@ -96,34 +95,87 @@ print ratings_all.head(3)
                                             
 
 #Implement the mean per movie... (column)
-mean_item = np.zeros(R.shape[1])
+mean_all_item = np.zeros(R.shape[1])
 for i in range(R.shape[1]):
-    mean_item[i]=np.mean(R[:,i])
+    mean_all_item[i]=np.mean(R[:,i])
     
 #Implement the mean per user....(row)
-mean_user = np.zeros(R.shape[0])
+mean_all_user = np.zeros(R.shape[0])
 for i in range(R.shape[0]):
-    mean_user[i] = np.mean(R[i,:])
-
+    mean_all_user[i] = np.mean(R[i,:])
 
 
 print ("\n")    
-print 'The mean of some movies is:', mean_item[0:4]
+print 'The mean of some movies is:', mean_all_item[0:4]
 print ("\n")    
 print ("=============================================================================")
 print ("\n")    
-print 'The mean of some users is:', mean_user[0:4]
-print ("\n")    
+print 'The mean of some users is:', mean_all_user[0:4]
+#########################################################
+#########################################################
 
 
-#__________NAIV APROACHES_______________
+#==========================================
+# #___________NAIV APROACHES_______________
+#==========================================
+#Use the second naiv : all ratings for user.
 
-#Use the first naiv : mean(all ratings)
+#Just try ti inmplement the vector of means
 
-MeanAll = np.mean(ratings[:,2])
-print 'The mean of all of ratings is:' , MeanAll
+#Try to sort the matrix by user
+sorted_user = ratings[np.argsort(ratings[:,1])]
 
-#Use the second naiv : all ratings for movie
+#Try to find the vector of mean by user...
+mean_u = np.zeros(max(sorted_user[:,1]))
+
+for i in range(max(sorted_user[:,1])):
+    mean_u[i] = np.mean(sorted_user[sorted_user[:,1] == i+1][:,2])
+    
+print("\n")
+print("The vector of the means by user is :" , mean_u)    
+
+#Use the third naiv : all ratings for each movie 
+
+sorted_movie = ratings[np.argsort(ratings[:,0])]
+
+#implement the mean
+mean_m = np.zeros(max(sorted_movie[:,0]))
+
+for i in range(max(sorted_user[:,0])):
+    mean_m[i] = np.mean(sorted_user[sorted_user[:,0] == i+1][:,2])
+
+print ("\n")
+print ("The vector of the means by movie is : " , mean_m)
+
+
+#The next step is to implement the linear regression model
+# R = alpha*Ruser + beta*Rmovie + gamma
+# alpha = np.vstack([ratings[:,2], np.ones(len(x))]).T
+#.... I dont understand how the linear regression works in python :P
+
+
+# m, c = np.linalg.lstsq(A, y)[0] 
+
+    
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
