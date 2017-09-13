@@ -63,6 +63,8 @@ for fold in range(nfolds):
 #apply the model to the test set:
     err_test[fold]=np.sqrt(np.mean((test[:,2]-gmr)**2))
     
+    
+    
 #print errors:
     print("Fold " + str(fold) + ": RMSE_train=" + str(err_train[fold]) + "; RMSE_test=" + str(err_test[fold]))
 
@@ -81,6 +83,9 @@ print("\n")
 
 #Implement the first Naiv approach : all ratings for user.
 #---------------------------------------------------------
+# In this naiv implementation we will use DataFrames in order to
+# avoid nested for_loops inside cross validation
+
 #Using Pandas we make :  | [user_id] | [movie_id] | [rating] |
 ratings_df = pd.DataFrame(ratings, columns = ['user_id' , 'movie_id' , 'rating'], 
                           dtype = int)
@@ -88,34 +93,38 @@ ratings_df = pd.DataFrame(ratings, columns = ['user_id' , 'movie_id' , 'rating']
 #implement the means for each user                          
 mean_user_all = ratings_df.groupby(['user_id'])['rating'].mean()
 
-#initialize the vectors
-mean_u_train = np.zeros(max(ratings_df['user_id']) )
-mean_u_test = np.zeros(max(ratings_df['user_id']) )
-
 #for each fold:
 for fold in range(nfolds):
     train_sel=np.array([x!=fold for x in seqs])
     test_sel=np.array([x==fold for x in seqs])
-    train=ratings_df.iloc[train_sel] #.iloc : indexing with np.array in pd.DataFrame
-    test=ratings_df.iloc[test_sel]
     
-    #np.bincount gia na doume tin suxnotita tou ka8e user 
-    #np.cumsum(np.bincount(train)) dixnei se poio index allazei o user
+    #make DataFrames for train and test 
+    train_df = pd.DataFrame(ratings_df.iloc[train_sel] , 
+                            columns=['user_id' , 'movie_id' , 'rating'] ,
+                            dtype= int) #.iloc : indexing with np.array in pd.DataFrame)
     
-#==============================================================================
-#     # calculate the vectors of mean for user_train and user_test
-#     for i in range(max(ratings[:,0])):
-#         mean_u_train[i] = np.mean(train[train[:,0] == i+1][:,2])
-# 
-#     for j in range(max(ratings[:,0])):
-#         mean_u_test[j] = np.mean(test[test[:,0] == j+1][:,2])
-#==============================================================================
-  
+    test_df =pd.DataFrame(ratings_df.iloc[test_sel] , 
+                            columns=['user_id' , 'movie_id' , 'rating'] ,
+                            dtype= int) 
+    
+    
+    #Count the occur frequency of each User in the train & test.    
+    times_u_train = np.bincount(train_df['user_id'])
+    times_u_test = np.bincount(test_df['user_id'])
+    
+    #Vector of means Implementation for each User
+    mean_u_train = np.array(train_df.groupby(['user_id'])['rating'].mean())
+    mean_u_test =  np.array(test_df.groupby(['user_id'])['rating'].mean())
+    
+    #After the vector of means Implementation we make equal vectors.
+    m_utrain_rep = np.repeat(mean_u_train , times_u_train[1:len(times_u_train)])
+    m_utest_rep = np.repeat(mean_u_test , times_u_test[1:len(times_u_test)])
+    
 #apply the model to the train set:
-    err_train[fold]=np.sqrt(np.mean((train[:,2]-mean_u_train)**2))
+    err_train[fold]=np.sqrt(np.mean((train[:,2]-m_utrain_rep)**2))
 
 #apply the model to the test set:
-    err_test[fold]=np.sqrt(np.mean((test[:,2]-mean_u_test)**2))
+    err_test[fold]=np.sqrt(np.mean((test[:,2]-m_utest_rep)**2))
     
 #print errors:
     print("Fold " + str(fold) + ": RMSE_train=" + str(err_train[fold]) + "; RMSE_test=" + str(err_test[fold]))
