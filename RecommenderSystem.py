@@ -17,7 +17,7 @@ from tqdm import tqdm
 from time import time as t
 
 # Please PRovide the path for your dataset
-path = "/home/dead/Documents/Advances in Data Mining/1st project/recommender_system"
+path = "/home/dead/Documents/Advances in Data Mining/1st project/Git_Project/recommender_system-master"
 
 def Cross_Validation(data,nfolds,fold):
     
